@@ -6,17 +6,23 @@ H3_BINARY_DIR := $(abspath dist/h3)
 H3_SOURCE_DIR := $(abspath h3)
 ABSEIL_BINARY_DIR := $(abspath dist/abseil-cpp)
 ABSEIL_SOURCE_DIR := $(abspath abseil-cpp)
+FLATBUFFERS_BINARY_DIR := $(abspath dist/flatbuffers)
+FLATBUFFERS_SOURCE_DIR := $(abspath flatbuffers)
 
 .PHONY: all reset_submodules clean \
 	clean_s2geometry \
 	build_s2geometry \
 	install_s2geometry \
-	install_s2geometry_impl \
 	patch_s2geometry \
-	build_s2geometry_impl \
 	depatch_s2geometry \
+	build_s2geometry_impl \
+	install_s2geometry_impl \
 	clean_abseil \
 	build_abseil \
+	install_abseil \
+	clean_flatbuffers \
+	build_flatbuffers \
+	install_flatbuffers \
 
 all:
 	@echo nothing special
@@ -27,19 +33,19 @@ reset_submodules:
 clean:
 	rm -rf build dist
 
-build: build_s2geometry build_h3 build_abseil
+build: build_s2geometry build_h3 build_abseil build_flatbuffers
 
-install: install_s2geometry install_h3 install_abseil
+install: install_s2geometry install_h3 install_abseil install_flatbuffers
 
 clean_s2geometry:
 	cd $(S2GEOMETRY_SOURCE_DIR) && \
 		git reset --hard HEAD
 	rm -rf $(S2GEOMETRY_BINARY_DIR)
 install_s2geometry: 
-	$(MAKE) patch_s2geometry && \
-		$(MAKE) build_s2geometry_impl && \
-		$(MAKE) install_s2geometry_impl && \
-		$(MAKE) depatch_s2geometry
+	$(MAKE) patch_s2geometry
+	$(MAKE) build_s2geometry_impl
+	$(MAKE) install_s2geometry_impl
+	$(MAKE) depatch_s2geometry
 build_s2geometry: 
 	$(MAKE) patch_s2geometry 
 	$(MAKE) build_s2geometry_impl
@@ -87,5 +93,16 @@ install_abseil: build_abseil
 build_abseil: 
 	mkdir -p $(ABSEIL_BINARY_DIR) && cd $(ABSEIL_BINARY_DIR) && \
 		cmake $(ABSEIL_SOURCE_DIR) \
+			-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX) && \
+		make -j4
+
+clean_flatbuffers:
+	rm -rf $(FLATBUFFERS_BINARY_DIR)
+install_flatbuffers: build_flatbuffers
+	cd $(FLATBUFFERS_BINARY_DIR) && \
+		make install
+build_flatbuffers: 
+	mkdir -p $(FLATBUFFERS_BINARY_DIR) && cd $(FLATBUFFERS_BINARY_DIR) && \
+		cmake $(FLATBUFFERS_SOURCE_DIR) \
 			-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX) && \
 		make -j4
