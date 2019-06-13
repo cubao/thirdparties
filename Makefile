@@ -4,6 +4,8 @@ S2GEOMETRY_PATCH_FILE := $(abspath s2geometry.patch)
 S2GEOMETRY_SOURCE_DIR := $(abspath s2geometry)
 H3_BINARY_DIR := $(abspath dist/h3)
 H3_SOURCE_DIR := $(abspath h3)
+ABSEIL_BINARY_DIR := $(abspath dist/abseil-cpp)
+ABSEIL_SOURCE_DIR := $(abspath abseil-cpp)
 
 .PHONY: all reset_submodules clean \
 	clean_s2geometry \
@@ -13,6 +15,8 @@ H3_SOURCE_DIR := $(abspath h3)
 	patch_s2geometry \
 	build_s2geometry_impl \
 	depatch_s2geometry \
+	clean_abseil \
+	build_abseil \
 
 all:
 	@echo nothing special
@@ -23,7 +27,9 @@ reset_submodules:
 clean:
 	rm -rf build dist
 
-install: install_s2geometry install_h3
+build: build_s2geometry build_h3 build_abseil
+
+install: install_s2geometry install_h3 install_abseil
 
 clean_s2geometry:
 	cd $(S2GEOMETRY_SOURCE_DIR) && \
@@ -71,4 +77,15 @@ build_h3:
 			-DENABLE_DOCS=OFF \
 			-DENABLE_FORMAT=OFF \
 			-DENABLE_LINTING=OFF && \
+		make -j4
+
+clean_abseil:
+	rm -rf $(ABSEIL_BINARY_DIR)
+install_abseil: build_abseil
+	cd $(ABSEIL_BINARY_DIR) && \
+		make install
+build_abseil: 
+	mkdir -p $(ABSEIL_BINARY_DIR) && cd $(ABSEIL_BINARY_DIR) && \
+		cmake $(ABSEIL_SOURCE_DIR) \
+			-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX) && \
 		make -j4
