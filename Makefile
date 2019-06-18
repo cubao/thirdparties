@@ -112,7 +112,7 @@ docker_test_build:
 	docker run --rm -v `pwd`:/workdir \
 		-it $(DOCKER_BUILD_TAG) zsh
 
-DOCKER_RELEASE_TAG := cubao/basic-bundles-thirdparties
+DOCKER_RELEASE_TAG := cubao/release
 docker_build:
 	docker build \
 		--tag $(DOCKER_RELEASE_TAG) .
