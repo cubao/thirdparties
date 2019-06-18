@@ -2,7 +2,6 @@ FROM cubao/basic-google-suit-bundles as build
 ADD . /tmp/code
 RUN cd /tmp/code && \
     sudo make clean && \
-    sudo chown conan -Rf ~/.cmake_install && \
     sudo make install
 
 FROM cubao/basic-google-suit-bundles

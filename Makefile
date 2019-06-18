@@ -12,8 +12,8 @@ FLATBUFFERS_SOURCE_DIR := $(abspath flatbuffers)
 	clean_s2geometry \
 	build_s2geometry \
 	install_s2geometry \
-	build_s2geometry_impl \
-	install_s2geometry_impl \
+	build_s2geometry \
+	install_s2geometry \
 	clean_abseil \
 	build_abseil \
 	install_abseil \
@@ -47,7 +47,7 @@ build_s2geometry:
 			-DBUILD_SHARED_LIBS=OFF \
 			-DBUILD_EXAMPLES=OFF && \
 		make -j4
-install_s2geometry:
+install_s2geometry: build_s2geometry
 	cd $(S2GEOMETRY_BINARY_DIR) && \
 		make install
 
