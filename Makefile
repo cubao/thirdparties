@@ -106,3 +106,17 @@ build_flatbuffers:
 		cmake $(FLATBUFFERS_SOURCE_DIR) \
 			-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX) && \
 		make -j4
+
+DOCKER_BUILD_TAG := cubao/basic-bundles
+docker_test_build:
+	docker run --rm -v `pwd`:/workdir \
+		-it $(DOCKER_BUILD_TAG) zsh
+
+DOCKER_RELEASE_TAG := cubao/basic-bundles-thirdparties
+docker_build:
+	docker build \
+		--tag $(DOCKER_RELEASE_TAG) .
+docker_push:
+	docker push $(DOCKER_RELEASE_TAG)
+docker_test_release:
+	docker run --rm -v `pwd`:/workdir -it $(DOCKER_RELEASE_TAG) zsh
