@@ -9,6 +9,8 @@ FLATBUFFERS_BINARY_DIR := $(abspath dist/flatbuffers)
 FLATBUFFERS_SOURCE_DIR := $(abspath flatbuffers)
 PROJ4_BINARY_DIR := $(abspath dist/PROJ)
 PROJ4_SOURCE_DIR := $(abspath PROJ)
+EIGEN_BINARY_DIR := $(abspath dist/eigen)
+EIGEN_SOURCE_DIR := $(abspath eigen-git-mirror)
 
 .PHONY: all reset_submodules clean \
 	clean_s2geometry \
@@ -25,6 +27,9 @@ PROJ4_SOURCE_DIR := $(abspath PROJ)
 	clean_proj4 \
 	build_proj4 \
 	install_proj4 \
+	clean_eigen \
+	build_eigen \
+	install_eigen \
 
 all:
 	@echo nothing special
@@ -35,9 +40,9 @@ reset_submodules:
 clean:
 	rm -rf build dist
 
-build: build_s2geometry build_h3 build_abseil build_flatbuffers build_proj4
+build: build_s2geometry build_h3 build_abseil build_flatbuffers build_proj4 build_eigen
 
-install: install_s2geometry install_h3 install_abseil install_flatbuffers install_proj4
+install: install_s2geometry install_h3 install_abseil install_flatbuffers install_proj4 install_eigen
 
 clean_s2geometry:
 	cd $(S2GEOMETRY_SOURCE_DIR) && \
@@ -105,6 +110,16 @@ build_proj4:
 			-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX) \
 			-DPROJ_TESTS=OFF && \
 		make -j4
+
+clean_eigen:
+	rm -rf $(EIGEN_BINARY_DIR)
+install_eigen: build_eigen
+	cd $(EIGEN_BINARY_DIR) && \
+		make install
+build_eigen: 
+	mkdir -p $(EIGEN_BINARY_DIR) && cd $(EIGEN_BINARY_DIR) && \
+		cmake $(EIGEN_SOURCE_DIR) \
+			-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX)
 
 DOCKER_BUILD_TAG := cubao/basic-google-suit-bundles
 docker_test_build:

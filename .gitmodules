@@ -13,3 +13,6 @@
 [submodule "PROJ"]
 	path = PROJ
 	url = https://github.com/OSGeo/PROJ.git
+[submodule "eigen-git-mirror"]
+	path = eigen-git-mirror
+	url = https://github.com/eigenteam/eigen-git-mirror.git
