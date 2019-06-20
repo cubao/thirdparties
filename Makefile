@@ -7,6 +7,8 @@ ABSEIL_BINARY_DIR := $(abspath dist/abseil-cpp)
 ABSEIL_SOURCE_DIR := $(abspath abseil-cpp)
 FLATBUFFERS_BINARY_DIR := $(abspath dist/flatbuffers)
 FLATBUFFERS_SOURCE_DIR := $(abspath flatbuffers)
+PROJ4_BINARY_DIR := $(abspath dist/PROJ)
+PROJ4_SOURCE_DIR := $(abspath PROJ)
 
 .PHONY: all reset_submodules clean \
 	clean_s2geometry \
@@ -20,6 +22,9 @@ FLATBUFFERS_SOURCE_DIR := $(abspath flatbuffers)
 	clean_flatbuffers \
 	build_flatbuffers \
 	install_flatbuffers \
+	clean_proj4 \
+	build_proj4 \
+	install_proj4 \
 
 all:
 	@echo nothing special
@@ -30,9 +35,9 @@ reset_submodules:
 clean:
 	rm -rf build dist
 
-build: build_s2geometry build_h3 build_abseil build_flatbuffers
+build: build_s2geometry build_h3 build_abseil build_flatbuffers build_proj4
 
-install: install_s2geometry install_h3 install_abseil install_flatbuffers
+install: install_s2geometry install_h3 install_abseil install_flatbuffers install_proj4
 
 clean_s2geometry:
 	cd $(S2GEOMETRY_SOURCE_DIR) && \
@@ -87,6 +92,18 @@ build_flatbuffers:
 	mkdir -p $(FLATBUFFERS_BINARY_DIR) && cd $(FLATBUFFERS_BINARY_DIR) && \
 		cmake $(FLATBUFFERS_SOURCE_DIR) \
 			-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX) && \
+		make -j4
+
+clean_proj4:
+	rm -rf $(PROJ4_BINARY_DIR)
+install_proj4: build_proj4
+	cd $(PROJ4_BINARY_DIR) && \
+		make install
+build_proj4: 
+	mkdir -p $(PROJ4_BINARY_DIR) && cd $(PROJ4_BINARY_DIR) && \
+		cmake $(PROJ4_SOURCE_DIR) \
+			-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX) \
+			-DPROJ_TESTS=OFF && \
 		make -j4
 
 DOCKER_BUILD_TAG := cubao/basic-google-suit-bundles
